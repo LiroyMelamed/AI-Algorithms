@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class node<T> {
@@ -6,6 +7,7 @@ public class node<T> {
     public LinkedList<String> Children = new LinkedList<>();
     public LinkedList<Double> Probability = new LinkedList<>();
     public LinkedList<String> Outcome = new LinkedList<>();
+    public ArrayList[][] CPT;
 
     public node(String name) {
         this.name = name;

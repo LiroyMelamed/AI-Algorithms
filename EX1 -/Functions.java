@@ -3,13 +3,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.ArrayList;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
@@ -52,6 +50,11 @@ public class Functions {
         return array;
     }
 
+    public static String[] QuestSplitProbability(String File) throws IOException {
+        String[] array = File.trim().split(" ");
+        return array;
+    }
+
     public static void main(String[] args) throws IOException, XMLStreamException {
         String[] Instruction = FileToList("input.txt");
         String Tree = Instruction[0];
@@ -69,7 +72,7 @@ public class Functions {
         parser(file);
     }
 
-    public static void parser(File file) throws FileNotFoundException, XMLStreamException {
+    public static void parser(File file) throws XMLStreamException, IOException {
         node Curr = new node<>();
         BayesianNet MyNet = new BayesianNet();
         boolean variable;
@@ -108,12 +111,6 @@ public class Functions {
                 // Iterator for accessing the metadeta related
                 // the tag started.
                 // Here, it would name of the company
-                Iterator<Attribute> iterator = element.getAttributes();
-                while (iterator.hasNext()) {
-                    Attribute attribute = iterator.next();
-                    QName qname = attribute.getName();
-                    QName qvalue = attribute.getName();
-                }
 
                 // Checking which tag needs to be opened for reading.
                 // If the tag matches then the boolean of that tag
@@ -189,14 +186,20 @@ public class Functions {
                 }
                 if (given) {
                     Curr.Parents.add(element.getData());
+                    node Parent = MyNet.GetNode(element.getData());
+                    if (!Parent.Children.contains(Curr.name)) {
+                        Parent.Children.add(Curr.name);
+                    }
                 }
                 if (table) {
-                    Curr.Probability.add(element.getData());
+                    String[] SplitedProb = QuestSplitProbability(element.getData());
+                    for (int index = 0; index < SplitedProb.length; index++) {
+                        Curr.Probability.add(SplitedProb[index]);
+                    }
+                    Curr.CPT = new ArrayList[Curr.Parents.size() + 2][Curr.Probability.size() + 1];
+                    MyNet.BuildCPT(Curr);
                 }
             }
         }
-        MyNet.PrintAllNode();
-
     }
-
 }
