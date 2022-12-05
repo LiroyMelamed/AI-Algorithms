@@ -1,9 +1,7 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -14,7 +12,6 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 public class Functions {
-
     public static String[] FileToList(String File) throws IOException {
         FileReader fr = new FileReader(File);
         BufferedReader br = new BufferedReader(fr);
@@ -27,7 +24,10 @@ public class Functions {
         return array;
     }
 
-    public static void BuildTree(String File) {
+    public static void BuildTree(BayesianNet myNet) {
+        for (Object NodeName : myNet.AllNodes.keySet()) {
+            myNet.BuildCPT(myNet.GetNode(NodeName));
+        }
     }
 
     public static String[] QuestSplitFirst(String File) throws IOException {
@@ -58,7 +58,6 @@ public class Functions {
     public static void main(String[] args) throws IOException, XMLStreamException {
         String[] Instruction = FileToList("input.txt");
         String Tree = Instruction[0];
-        BuildTree(Tree);
         // for (int i = 1; i < Instruction.length; i++) {
         // String[] Splitted = QuestSplitFirst(Instruction[i]);
         // String[] Splittedtwo = QuestSplitSecond(Splitted[1]);
@@ -70,6 +69,7 @@ public class Functions {
         // }
         File file = new File(Tree);
         parser(file);
+
     }
 
     public static void parser(File file) throws XMLStreamException, IOException {
@@ -152,6 +152,7 @@ public class Functions {
                     outcome = false;
                 }
                 if (element.getName().toString().equalsIgnoreCase("definition")) {
+                    Curr.CPT = new String[Curr.Probability.size() + 1][Curr.Parents.size() + 2];
                     definition = false;
                 }
                 if (element.getName().toString().equalsIgnoreCase("for")) {
@@ -196,10 +197,9 @@ public class Functions {
                     for (int index = 0; index < SplitedProb.length; index++) {
                         Curr.Probability.add(SplitedProb[index]);
                     }
-                    Curr.CPT = new ArrayList[Curr.Parents.size() + 2][Curr.Probability.size() + 1];
-                    MyNet.BuildCPT(Curr);
                 }
             }
         }
+        BuildTree(MyNet);
     }
 }
