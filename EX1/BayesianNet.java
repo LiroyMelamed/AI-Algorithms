@@ -74,13 +74,15 @@ public class BayesianNet<T> {
    row++;
    Ncpt.CPT[row][Ncpt.Parents.size() + 1] = Prob.toString();
   }
+  // print the mat
+  // for (int i = 0; i < Ncpt.CPT.length; i++) {
+  // for (int j = 0; j < Ncpt.CPT[0].length; j++) {
+  // System.out.print(Ncpt.CPT[i][j] + " ");
+  // }
+  // System.out.println();
+  // }
 
-  for (int i = 0; i < Ncpt.CPT.length; i++) {
-   for (int j = 0; j < Ncpt.CPT[0].length; j++) {
-    System.out.print(Ncpt.CPT[i][j] + " ");
-   }
-   System.out.println();
-  }
+  buildFastCPT(Ncpt);
  }
 
  /**
@@ -106,6 +108,21 @@ public class BayesianNet<T> {
      row++;
     }
    }
+  }
+ }
+
+ public void buildFastCPT(node NCPT) {
+  for (int i = 1; i < NCPT.CPT.length; i++) {
+   String querry = "";
+   for (int j = 0; j < NCPT.CPT[0].length; j++) {
+    if (j != NCPT.CPT[0].length - 1) {
+     querry = querry + NCPT.CPT[i][j];
+    }
+    if (j == NCPT.CPT[0].length - 1) {
+     NCPT.FastCPT.put(querry, NCPT.CPT[i][j]);
+    }
+   }
+   System.out.println(querry + " " + NCPT.FastCPT.get(querry));
   }
  }
 }

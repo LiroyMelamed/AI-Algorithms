@@ -56,7 +56,7 @@ public class Functions {
     }
 
     public static void main(String[] args) throws IOException, XMLStreamException {
-        String[] Instruction = FileToList("input.txt");
+        String[] Instruction = FileToList("/Users/liroymelamed/Desktop/AI-Algorithms/EX1/input.txt");
         String Tree = Instruction[0];
         // for (int i = 1; i < Instruction.length; i++) {
         // String[] Splitted = QuestSplitFirst(Instruction[i]);

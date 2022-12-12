@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class node<T> {
@@ -6,6 +7,7 @@ public class node<T> {
     public LinkedList<String> Children = new LinkedList<>();
     public LinkedList<Double> Probability = new LinkedList<>();
     public LinkedList<String> Outcome = new LinkedList<>();
+    HashMap<String, String> FastCPT = new HashMap<String, String>();
     public String[][] CPT;
 
     public node(String name) {
