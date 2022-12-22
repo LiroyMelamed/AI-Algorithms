@@ -58,17 +58,22 @@ public class Functions {
     public static void main(String[] args) throws IOException, XMLStreamException {
         String[] Instruction = FileToList("/Users/liroymelamed/Desktop/AI-Algorithms/EX1/input.txt");
         String Tree = Instruction[0];
-        // for (int i = 1; i < Instruction.length; i++) {
-        // String[] Splitted = QuestSplitFirst(Instruction[i]);
-        // String[] Splittedtwo = QuestSplitSecond(Splitted[1]);
-        // String[] Splittedthird = QuestSplitThird(Splittedtwo[1]);
-        // String[] SplittedForth = QuestSplitFourth(Splittedthird[1]);
-        // System.out.println(Splittedtwo[0]);
-        // System.out.println(Splittedthird[0]);
-        // System.out.println(SplittedForth[1]);
-        // }
         File file = new File(Tree);
         parser(file);
+
+        for (int i = 1; i < Instruction.length; i++) {
+            String[] Splitted = QuestSplitFirst(Instruction[i]);
+            String[] Splittedtwo = QuestSplitSecond(Splitted[1]);
+            String[] Splittedthird = QuestSplitThird(Splittedtwo[1]);
+            String[] SplittedForth = QuestSplitFourth(Splittedthird[1]);
+            // System.out.println(Splittedtwo[0]);
+            // System.out.println(Splittedthird[0]);
+            // System.out.println(SplittedForth[1].toString());
+            if (SplittedForth[1].contains("1")) {
+                String[] querry = { Splittedtwo[0], Splittedthird[0], SplittedForth[1] };
+                Algorithms.SimpleDeduction(querry);
+            }
+        }
 
     }
 

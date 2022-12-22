@@ -1,19 +1,18 @@
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
 public class BayesianNet<T> {
- public Hashtable<String, node> AllNodes;
+ public static Hashtable<String, node> AllNodes;
 
  public BayesianNet() {
   AllNodes = new Hashtable<>();
  }
 
- public node GetNode(String Nname) {
+ public static node GetNode(String Nname) {
   return AllNodes.get(Nname);
  }
 
- public node GetNode(Object Nname) {
+ public static node GetNode(Object Nname) {
   return AllNodes.get(Nname);
  }
 
@@ -122,7 +121,7 @@ public class BayesianNet<T> {
      NCPT.FastCPT.put(querry, NCPT.CPT[i][j]);
     }
    }
-   System.out.println(querry + " " + NCPT.FastCPT.get(querry));
+   // System.out.println(querry + " " + NCPT.FastCPT.get(querry));
   }
  }
 }
