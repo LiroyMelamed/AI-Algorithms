@@ -3,6 +3,9 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 public class Algorithms {
+ int plus = 0;
+ int multipal = 0;
+
  public static void SimpleDeduction(String[] querry) {
   HashMap<String, String> Given = new HashMap<String, String>();
   HashMap<String, String> Root = new HashMap<String, String>();
