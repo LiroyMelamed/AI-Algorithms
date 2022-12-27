@@ -1,8 +1,9 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -11,7 +12,7 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-public class Functions {
+public class Ex1 {
     public static String[] FileToList(String File) throws IOException {
         FileReader fr = new FileReader(File);
         BufferedReader br = new BufferedReader(fr);
@@ -56,6 +57,15 @@ public class Functions {
     }
 
     public static void main(String[] args) throws IOException, XMLStreamException {
+        String fileName = "output.txt";
+
+        try (FileWriter fw = new FileWriter(fileName, false);
+            BufferedWriter bw = new BufferedWriter(fw)) {
+            bw.write("");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         String[] Instruction = FileToList("input.txt");
         String Tree = Instruction[0];
         File file = new File(Tree);

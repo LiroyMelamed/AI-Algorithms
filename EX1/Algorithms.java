@@ -1,6 +1,9 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -41,28 +44,66 @@ public class Algorithms {
    Given.put(Splited[0], Splited[1]);
   }
 
-  Hidden = FindHidden(Root, Given);           // Sending to function that find all the hidden
-  Quests = MakeQuests(Root, Given, Hidden);   // Makes all the posiible quests with all the variables
-  
-  for (int i = 0; i < Quests.length; i++) {   // Solving every Quest Of the Numerator solo
-    double[] answer = SolveQuerry(Quests[i], multipal);
-    Numerator += answer[0];
-    multipal += answer[1];
-    plus++;
+  String check = ""; // In case that the querry is in the root CPT
+  for (String string : Given.keySet()) {
+    check += Given.get(string);
   }
-
-  Hidden = FindHidden(Root, Given);
-  Quests = MakeQuestsDenominator(Root, Given, Hidden);
-  for (int i = 0; i < Quests.length; i++) {   // Solving every Quest Of the Denominator solo
-    double[] answer = SolveQuerry(Quests[i], multipal);
-    Denominator += answer[0];
-    multipal += answer[1];
-    plus++;
+  check += RootSplit[1];
+  if(BayesianNet.AllNodes.get(RootSplit[0]).FastCPT.containsKey(RootSplit[1]) || (CheckCPT(Root, Given) && BayesianNet.AllNodes.get(RootSplit[0]).FastCPT.containsKey(check))){ // In case that the querry is in the root CPT
+    if (BayesianNet.AllNodes.get(RootSplit[0]).FastCPT.containsKey(RootSplit[1])) {
+      DecimalFormat df = new DecimalFormat("#0.00000");
+      String writeToFile = df.format(Double.parseDouble(BayesianNet.AllNodes.get(RootSplit[0]).FastCPT.get(RootSplit[1]).toString())) + "," + Integer.toString(0) + "," + Integer.toString((int) 0);
+      try (FileWriter fw = new FileWriter("output.txt", true);
+        BufferedWriter bw = new BufferedWriter(fw)) {
+        bw.write(writeToFile);
+        bw.newLine();
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
+    }
+    else{
+      DecimalFormat df = new DecimalFormat("#0.00000");
+      String writeToFile = df.format(Double.parseDouble(BayesianNet.AllNodes.get(RootSplit[0]).FastCPT.get(check).toString())) + "," + Integer.toString(0) + "," + Integer.toString((int) 0);
+      try (FileWriter fw = new FileWriter("output.txt", true);
+        BufferedWriter bw = new BufferedWriter(fw)) {
+        bw.write(writeToFile);
+        bw.newLine();
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
+    }
   }
+  else{ // The querry isnt in the root CPT Table
+    Hidden = FindHidden(Root, Given);           // Sending to function that find all the hidden
+    Quests = MakeQuests(Root, Given, Hidden);   // Makes all the posiible quests with all the variables
+    
+    for (int i = 0; i < Quests.length; i++) {   // Solving every Quest Of the Numerator solo
+      double[] answer = SolveQuerry(Quests[i], multipal);
+      Numerator += answer[0];
+      multipal += answer[1];
+      plus++;
+    }
 
-  double FinalSoulotion = Numerator / (Numerator + Denominator);  // Solving the final soulotion
-  System.out.println(FinalSoulotion+","+plus+","+(int) multipal); // Print the final soulotion
- }
+    Hidden = FindHidden(Root, Given);
+    Quests = MakeQuestsDenominator(Root, Given, Hidden);
+    for (int i = 0; i < Quests.length; i++) {   // Solving every Quest Of the Denominator solo
+      double[] answer = SolveQuerry(Quests[i], multipal);
+      Denominator += answer[0];
+      multipal += answer[1];
+      plus++;
+    }
+    DecimalFormat df = new DecimalFormat("#0.00000");
+    double FinalSoulotion = Numerator / (Numerator + Denominator);  // Solving the final soulotion
+    String writeToFile = df.format(FinalSoulotion) + "," + Integer.toString(plus) + "," + Integer.toString((int) multipal);
+    try (FileWriter fw = new FileWriter("output.txt", true);
+      BufferedWriter bw = new BufferedWriter(fw)) {
+      bw.write(writeToFile);
+      bw.newLine();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+  }
+  }
 
  /**
   * The FindHidden function finds all the variables that not in the querry
@@ -169,8 +210,8 @@ public class Algorithms {
      Outcomes.add(string.toString());
     }
    }
-   temp *= Outcomes.size();
    Mat = builtOptions(Mat, Outcomes, Hidden.size(), temp, NumOfSubQuest);
+   temp *= Outcomes.size();
   }
   for (int i = 0; i < NumOfSubQuest; i++) {
    String quest = "";
@@ -290,122 +331,164 @@ public class Algorithms {
    Given.put(Splited[0], Splited[1]);
   }
 
-  Hidden = FindHiddenFather(Root, Given);
-  List<Factor> Factors = new ArrayList<Factor>();
-  Factors = BuildFactorList(Root, Given, Hidden);
-
-  for (Object Evidence : Given.keySet()) {
-    List<Factor> FactorsToEliminate = new ArrayList<Factor>();
-    for (int i = 0; i < Factors.size(); i++) {
-      if(Factors.get(i).containsVariable(BayesianNet.GetNode(Evidence))){
-        FactorsToEliminate.add(Factors.get(i));
-        Factors.remove(Factors.get(i));
-        i--;
+  String check = ""; // In case that the querry is in the root CPT
+  for (String string : Given.keySet()) {
+    check += Given.get(string);
+  }
+  check += RootSplit[1];
+  if(BayesianNet.AllNodes.get(RootSplit[0]).FastCPT.containsKey(RootSplit[1]) || (CheckCPT(Root, Given) && BayesianNet.AllNodes.get(RootSplit[0]).FastCPT.containsKey(check))){ // In case that the querry is in the root CPT
+    if (BayesianNet.AllNodes.get(RootSplit[0]).FastCPT.containsKey(RootSplit[1])) {
+      DecimalFormat df = new DecimalFormat("#0.00000");
+      String writeToFile = df.format(Double.parseDouble(BayesianNet.AllNodes.get(RootSplit[0]).FastCPT.get(RootSplit[1]).toString())) + "," + Integer.toString(0) + "," + Integer.toString((int) 0);
+      try (FileWriter fw = new FileWriter("output.txt", true);
+        BufferedWriter bw = new BufferedWriter(fw)) {
+        bw.write(writeToFile);
+        bw.newLine();
+      } catch (IOException e) {
+          e.printStackTrace();
       }
     }
-    for (int i = 0; i < FactorsToEliminate.size(); i++) {
-      if (FactorsToEliminate.get(i).FactorCPT[0].length > 2) {
-        Factors.add(EliminateGiven(FactorsToEliminate.get(i), Evidence.toString(), Given.get(Evidence)));
-      }
-      else{
-        Factors.add(EliminateSmallGiven(FactorsToEliminate.get(i), Evidence.toString(), Given.get(Evidence)));
+    else{
+      DecimalFormat df = new DecimalFormat("#0.00000");
+      String writeToFile = df.format(Double.parseDouble(BayesianNet.AllNodes.get(RootSplit[0]).FastCPT.get(check).toString())) + "," + Integer.toString(0) + "," + Integer.toString((int) 0);
+      try (FileWriter fw = new FileWriter("output.txt", true);
+        BufferedWriter bw = new BufferedWriter(fw)) {
+        bw.write(writeToFile);
+        bw.newLine();
+      } catch (IOException e) {
+          e.printStackTrace();
       }
     }
   }
+  else{ // The querry isnt in the root CPT
+    Hidden = FindHiddenFather(Root, Given);
+    List<Factor> Factors = new ArrayList<Factor>();
+    Factors = BuildFactorList(Root, Given, Hidden);
 
-  for (int i = 0; i < Factors.size(); i++) {
-    if (Factors.get(i).FactorCPT.length == 2) {
-      Factors.remove(i);
-      i--;
-    }
-  }
-
-  if(querry[2].contains("2")){ // Algorithm number 2 Sort it Alphabtic
-    Collections.sort(Hidden);
-  }
-
-  
-  if(querry[2].contains("3")){ // Algorithm number 3 Sort the hidden by the sum of the times they apper in each Fator CPT table that contain the hidden
-    HashMap<String,Integer> map = new HashMap<>();
-    for (int i = 0; i < Hidden.size(); i++) {
-      int numberOftime = 0;
-      List<Factor> TempList = new ArrayList<Factor>();
-      TempList.addAll(Factors);
-      for (int j = 0; j < TempList.size(); j++) {
-        if (TempList.get(j).containsVariable(BayesianNet.GetNode(Hidden.get(i)))){
-          numberOftime += TempList.get(j).FactorCPT.length;
-          TempList.remove(TempList.get(j));
-          j--;
+    for (Object Evidence : Given.keySet()) {
+      List<Factor> FactorsToEliminate = new ArrayList<Factor>();
+      for (int i = 0; i < Factors.size(); i++) {
+        if(Factors.get(i).containsVariable(BayesianNet.GetNode(Evidence))){
+          FactorsToEliminate.add(Factors.get(i));
+          Factors.remove(Factors.get(i));
+          i--;
         }
       }
-      map.put(Hidden.get(i),numberOftime);
+      for (int i = 0; i < FactorsToEliminate.size(); i++) {
+        if (FactorsToEliminate.get(i).FactorCPT[0].length > 2) {
+          Factors.add(EliminateGiven(FactorsToEliminate.get(i), Evidence.toString(), Given.get(Evidence)));
+        }
+        else{
+          Factors.add(EliminateSmallGiven(FactorsToEliminate.get(i), Evidence.toString(), Given.get(Evidence)));
+        }
+      }
     }
-    Map<String, Integer> sortedMap = map.entrySet().stream()
-    .sorted(Map.Entry.comparingByValue())
-    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-            (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-    int i = 0;
-    for (String hidden : sortedMap.keySet()) {
-      Hidden.set(i, hidden);
-      i++;
-    }
-  }
 
-  while(!Hidden.isEmpty()){
-    String currentVariable = Hidden.get(0);
-    List<Factor> FactorsToJoin = new ArrayList<Factor>();
     for (int i = 0; i < Factors.size(); i++) {
-      if (Factors.get(i).containsVariable(BayesianNet.GetNode(currentVariable))){
-        FactorsToJoin.add(Factors.get(i));
-        Factors.remove(Factors.get(i));
+      if (Factors.get(i).FactorCPT.length == 2) {
+        Factors.remove(i);
         i--;
       }
     }
-    Collections.sort(FactorsToJoin);
-    if (FactorsToJoin.size()>1) {
+
+    if(querry[2].contains("2")){ // Algorithm number 2 Sort it Alphabtic
+      Collections.sort(Hidden);
+    }
+
+    
+    if(querry[2].contains("3")){ // Algorithm number 3 Sort the hidden by the sum of the times they apper in each Fator CPT table that contain the hidden
+      HashMap<String,Integer> map = new HashMap<>();
+      for (int i = 0; i < Hidden.size(); i++) {
+        int numberOftime = 0;
+        List<Factor> TempList = new ArrayList<Factor>();
+        TempList.addAll(Factors);
+        for (int j = 0; j < TempList.size(); j++) {
+          if (TempList.get(j).containsVariable(BayesianNet.GetNode(Hidden.get(i)))){
+            numberOftime += TempList.get(j).FactorCPT.length;
+            TempList.remove(TempList.get(j));
+            j--;
+          }
+        }
+        map.put(Hidden.get(i),numberOftime);
+      }
+      Map<String, Integer> sortedMap = map.entrySet().stream()
+      .sorted(Map.Entry.comparingByValue())
+      .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+              (oldValue, newValue) -> oldValue, LinkedHashMap::new));
       int i = 0;
-      for (int j = 1; j < FactorsToJoin.size(); j++) {
-        HashMap<Factor,Integer> JoinAns = new HashMap<>();
-        JoinAns = Join(FactorsToJoin.get(i),FactorsToJoin.get(j));
-        Factor JoinedFactor = new Factor();
-        for (Factor factor : JoinAns.keySet()) {
-          JoinedFactor = factor;
-          multipal += JoinAns.get(factor);
-        }
-        JoinedFactor.buildFastCPT(JoinedFactor);
-        FactorsToJoin.set(i, JoinedFactor);
+      for (String hidden : sortedMap.keySet()) {
+        Hidden.set(i, hidden);
+        i++;
       }
     }
-    if (FactorsToJoin.get(0).FactorCPT[0].length != 2) {
+
+    while(!Hidden.isEmpty()){ // Hidden Join&Elimination loop
+      String currentVariable = Hidden.get(0);
+      List<Factor> FactorsToJoin = new ArrayList<Factor>();
+      for (int i = 0; i < Factors.size(); i++) {
+        if (Factors.get(i).containsVariable(BayesianNet.GetNode(currentVariable))){
+          FactorsToJoin.add(Factors.get(i));
+          Factors.remove(Factors.get(i));
+          i--;
+        }
+      }
+      Collections.sort(FactorsToJoin);
+      if (FactorsToJoin.size()>1) {
+        int i = 0;
+        for (int j = 1; j < FactorsToJoin.size(); j++) {
+          HashMap<Factor,Integer> JoinAns = new HashMap<>();
+          JoinAns = Join(FactorsToJoin.get(i),FactorsToJoin.get(j));
+          Factor JoinedFactor = new Factor();
+          for (Factor factor : JoinAns.keySet()) {
+            JoinedFactor = factor;
+            multipal += JoinAns.get(factor);
+          }
+          JoinedFactor.buildFastCPT(JoinedFactor);
+          FactorsToJoin.set(i, JoinedFactor);
+        }
+      }
       HashMap<String[][],Integer> answer = new HashMap<>();
-      answer = Eliminate(FactorsToJoin.get(0), currentVariable);
+      if(FactorsToJoin.get(0).variables.size()>1){
+        answer = Eliminate(FactorsToJoin.get(0), currentVariable);
+        Factors.add(FactorsToJoin.get(0));
+      }
+
       for (String[][] mat : answer.keySet()) {
         FactorsToJoin.get(0).FactorCPT = mat;
         plus += answer.get(mat);
       }
+      FactorsToJoin.get(0).buildFastCPT(FactorsToJoin.get(0));
+      Hidden.remove(0);
+    } // End of Hidden Join&Elimination loop
+    
+    while(Factors.size() != 1) {
+      HashMap<Factor,Integer> JoinAns = new HashMap<>();
+      JoinAns = Join(Factors.get(0),Factors.get(1));
+      for (Factor f1 : JoinAns.keySet()) {
+        Factors.add(f1);
+        multipal += JoinAns.get(f1);
+      }
+      Factors.remove(Factors.get(0));
+      Factors.remove(Factors.get(0));
     }
-    FactorsToJoin.get(0).buildFastCPT(FactorsToJoin.get(0));
-    Factors.add(FactorsToJoin.get(0));
-    Hidden.remove(0);
-  }
-  if (Factors.size() == 2) {
     String currentVariable = "";
     plus += Normalize(Factors.get(0));
     Factors.get(0).buildFastCPT(Factors.get(0));
     for (String name : Root.keySet()) {
       currentVariable = name;
     }
-    System.out.println(Factors.get(0).FastCPT.get(Root.get(currentVariable))+","+plus+","+multipal);
-  }
-  else{
-    String currentVariable = "";
-    plus += Normalize(Factors.get(Factors.size()-1));
-    Factors.get(Factors.size()-1).buildFastCPT(Factors.get(Factors.size()-1));
-    for (String name : Root.keySet()) {
-      currentVariable = name;
+    DecimalFormat df = new DecimalFormat("#0.00000");
+    String finalans = Factors.get(0).FastCPT.get(Root.get(currentVariable));
+    Double FinalAnsToDouble = Double.parseDouble(finalans);
+    String writeToFile = df.format(FinalAnsToDouble)+","+ Integer.toString(plus)+","+Integer.toString(multipal);
+    try (FileWriter fw = new FileWriter("output.txt", true);
+      BufferedWriter bw = new BufferedWriter(fw)) {
+      bw.write(writeToFile);
+      bw.newLine();
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
     }
-    System.out.println(Factors.get(Factors.size()-1).FastCPT.get(Root.get(currentVariable))+","+plus+","+multipal);
-  }
 }
 
  /**
@@ -553,24 +636,32 @@ return Mat;
  private static HashMap<String[][],Integer> SolveJoin(String[][] mat, Factor f1, Factor f2, int numOfSubQuest) {
   int multiply = 0;
   HashMap<String[][], Integer> answer = new HashMap<String[][],Integer>();
-  HashMap<String, Integer> map = new HashMap<String,Integer>();
+  HashMap<String, Integer> map1 = new HashMap<String,Integer>();
+  HashMap<String, Integer> map2 = new HashMap<String,Integer>();
   for (int k = 0; k < f2.variables.size(); k++) {
     for (int index = 0; index < mat[0].length-1; index++) {
       if (mat[0][index] == f2.variables.get(k).name) {
-        map.put(f2.variables.get(k).name, index);
+        map2.put(f2.variables.get(k).name, index);
       }
     }
   }
+  for (int k = 0; k < f1.variables.size(); k++) {
+    for (int index = 0; index < mat[0].length-1; index++) {
+      if (mat[0][index] == f1.variables.get(k).name) {
+        map1.put(f1.variables.get(k).name, index);
+      }
+    }
+  }
+
   for (int i = 1; i < mat.length; i++) {
     String querry1 = "";
     String querry2 = "";
-    int j = 0;
-    for (; j < f1.FactorCPT[0].length-1; j++) {
-      querry1 += mat[i][j];
+    for (int j = 0; j < f1.FactorCPT[0].length-1; j++) {
+      querry1 += mat[i][map1.get(f1.FactorCPT[0][j])];
     }
 
     for (int j2 = 0; j2 < f2.FactorCPT[0].length-1; j2++) {
-      querry2 += mat[i][map.get(f2.FactorCPT[0][j2])];
+      querry2 += mat[i][map2.get(f2.FactorCPT[0][j2])];
     }
     multiply++;
     double querryAns = Double.parseDouble(f1.FastCPT.get(querry1)) * Double.parseDouble(f2.FastCPT.get(querry2));
@@ -861,5 +952,23 @@ return Mat;
     f1.FactorCPT[i][f1.FactorCPT[0].length-1] = Double.toString(newAns);
   }
   return plus;
+ }
+
+ public static boolean CheckCPT(HashMap Root, HashMap Given){
+  String rootName = "";
+  for (Object root : Root.keySet()) {
+    rootName = root.toString();
+  }
+  node rootNode = BayesianNet.AllNodes.get(rootName);
+  List<String> allVars = new ArrayList<>();
+  for (int i = 0; i < rootNode.CPT[0].length-1; i++) {
+    allVars.add(rootNode.CPT[0][i]);
+  }
+  for (Object given : Given.keySet()) {
+    if(!allVars.contains(given.toString())){
+      return false;
+    }
+  }
+  return true;
  }
 }
