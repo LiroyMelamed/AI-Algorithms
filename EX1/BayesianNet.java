@@ -4,6 +4,11 @@ import java.util.LinkedList;
 public class BayesianNet<T> {
  public static Hashtable<String, node> AllNodes;
 
+ /**
+  * My BayesianNet Class store all the nodes that are in My net
+  * And represents the probabilistic relationships between different variables
+  */
+  
  public BayesianNet() {
   AllNodes = new Hashtable<>();
  }
@@ -73,13 +78,6 @@ public class BayesianNet<T> {
    row++;
    Ncpt.CPT[row][Ncpt.Parents.size() + 1] = Prob.toString();
   }
-  // print the mat
-  // for (int i = 0; i < Ncpt.CPT.length; i++) {
-  // for (int j = 0; j < Ncpt.CPT[0].length; j++) {
-  // System.out.print(Ncpt.CPT[i][j] + " ");
-  // }
-  // System.out.println();
-  // }
 
   buildFastCPT(Ncpt);
  }
@@ -93,7 +91,6 @@ public class BayesianNet<T> {
   * @param col     the column of the parent
   * @param temp    the number of time each outcome need to be written
   */
-
  public void builtOptions(node child, LinkedList<String> outcome, int col, int temp) {
   // initalize the row number to 1
   int row = 1;
@@ -110,6 +107,13 @@ public class BayesianNet<T> {
   }
  }
 
+ /**
+  * buildFactCpt is a function that build an HashMap and puts inside the querrys as an key and the
+  * probabilty as a value
+  *
+  * @param NCPT node to build his CPT
+  */
+
  public void buildFastCPT(node NCPT) {
   for (int i = 1; i < NCPT.CPT.length; i++) {
    String querry = "";
@@ -121,7 +125,6 @@ public class BayesianNet<T> {
      NCPT.FastCPT.put(querry, NCPT.CPT[i][j]);
     }
    }
-   // System.out.println(querry + " " + NCPT.FastCPT.get(querry));
   }
  }
 }
